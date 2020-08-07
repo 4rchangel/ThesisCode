@@ -94,7 +94,7 @@ using namespace matrix_profile;
 								//static_assert(sizeof(idx_dtype) == sizeof(long long int), "intrinsic type hack, assuming equal length of long long and long");
 								//_mm256_maskstore_epi64((long long*)(idx_rowmin+veci), mm_vert_mask_alias, mm_tmp_idx);
 								auto mm_tmp_vertidx_double_alias = _mm256_castsi256_pd(mm_tmp_idx);
-								_mm256_maskstore_pd((double*)(idx_rowmin+veci), mm_vert_mask_alias, mm_tmp_vertidx_double_alias);// TODO: use AVX2 int version instead of the double-hack
+								_mm256_maskstore_pd((double*)(idx_rowmin+veci), mm_vert_mask_alias, mm_tmp_vertidx_double_alias);
 						}
 
 						//update horizontal profile result, i.e. looking for new minima in cols
@@ -121,8 +121,8 @@ using namespace matrix_profile;
 				}
 				//integration of the profile_j results among the vector lanes
 				{
-					    tsa_dtype avx_prof[VECLEN] __attribute__ ((aligned (16)));
-						idx_dtype avx_index[VECLEN] __attribute__ ((aligned (16)));
+					    tsa_dtype avx_prof[VECLEN]  __attribute__ ((aligned (64)));
+						idx_dtype avx_index[VECLEN] __attribute__ ((aligned (64)));
 
 						_mm256_store_pd(avx_prof, mm_profile_j_veclane); // get the data from the AVX registers in a commodity array
 						static_assert(sizeof(idx_dtype) == 8,  "only 64bit signed integer datatype supported");
