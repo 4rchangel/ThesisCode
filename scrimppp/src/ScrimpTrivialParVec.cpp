@@ -152,8 +152,8 @@ void ScrimpTrivialParVec::compute_matrix_profile(const Scrimppp_params& params) 
 	int exclusionZone = windowSize / 4;
 	int timeSeriesLength = A.size();
 	int profile_length = timeSeriesLength - windowSize + 1;
-	aligned_tsdtype_vec profile(profile_length, -1.0);
-	aligned_int_vec profileIndex(profile_length, 0);
+	aligned_tsdtype_vec profile(profile_length, -1.0);//overallocation to enable usage of aligned avx-writes up to the end
+	aligned_int_vec profileIndex(profile_length, 0);  //overallocation to enable usage of aligned avx-writes up to the end
 	const int BLOCKING_SIZE = params.block_length;
 	const bool distrib_io = (params.filetype == Scrimppp_params::BIN) && params.use_distributed_io;
 
@@ -324,7 +324,7 @@ void ScrimpTrivialParVec::compute_matrix_profile(const Scrimppp_params& params) 
 	EXEC_DEBUG("apply transformation from score to distance values")
 	// apply a correction of the distance values, as we dropped a factor of 2 to avoid unnecessary computations
 	tsa_dtype twice_m = 2.0*static_cast<tsa_dtype>(windowSize);
-	for (int i = 0; i<=profile_length; ++i) {
+	for (int i = 0; i<profile_length; ++i) {
 		profile[i] = twice_m - 2.0 * profile[i];
 	}
 	TIMEPOINT( tpostprocessing)
